@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>正在跳转...</title>
+<style>
+body{font-family:system-ui;display:flex;justify-content:center;align-items:center;height:100vh;margin:0;background:#f5f5f5}
+.box{text-align:center;padding:40px;background:white;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,.1)}
+h2{margin:0 0 16px;color:#333}
+p{color:#666;margin:0}
+</style>
+</head>
+<body>
+<div class="box">
+  <h2>正在为 Y292 石萌 投票...</h2>
+  <p id="msg">请稍等5秒</p>
+</div>
+<script>
+const API = 'https://static-vote.ua.tjyun.com/vote/v2/enorth_vote/vote/vote';
+const TARGET = 'http://news.enorth.com.cn/system/2026/05/15/059402774.shtml';
+const DATA = 'report_id_2505=1&report_2505_3548=report_2505_3548_22095';
+
+async function vote() {
+  try {
+    // 等待5秒预热
+    await new Promise(r => setTimeout(r, 5000));
+    const resp = await fetch(API, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Referer': TARGET,
+        'Origin': 'http://news.enorth.com.cn'
+      },
+      body: DATA
+    });
+    const json = await resp.json();
+    document.getElementById('msg').textContent = json.code === 0 ? '✓ 投票成功！' : '投票失败: ' + json.message;
+  } catch(e) {
+    document.getElementById('msg').textContent = '投票异常';
+  }
+  // 3秒后跳转原页面
+  setTimeout(() => location.href = TARGET, 3000);
+}
+vote();
+</script>
+</body>
+</html>
